@@ -31,6 +31,7 @@ async def handle_client(reader, writer):
     try:
         while True:
             data = await reader.read(1024)
+            print(f"{data=}")
 
             message = data.decode()
             request = json.loads(message)
@@ -44,6 +45,7 @@ async def handle_client(reader, writer):
             # await writer.drain()
 
     except Exception as e:
+        print(f"Error: {e}")
         response = {"status": "error", "message": str(e)}
         await send_to_client_in_chunks(writer, response)
         # writer.write(json.dumps(response).encode())
