@@ -3,7 +3,7 @@ Entry point for initializing the app components
 """
 import asyncio
 
-from src.handlers import handle_client
+from src.handlers.handler import handle_client
 from src.settings import Settings
 
 

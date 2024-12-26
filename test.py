@@ -2,7 +2,7 @@ import json
 import socket
 
 # Define server address and port
-server_address = '127.0.0.1'
+server_address = '0.0.0.0'
 server_port = 65432
 
 # Create a socket object
@@ -24,7 +24,7 @@ try:
     print(f"Sent: {message}")
 
     # Receive response from the server
-    response = client_socket.recv(16384)
+    response = client_socket.recv(1024)
     print(f"Received: {response=}")
     print(f"Received: {response.decode('utf-8')}")
 
