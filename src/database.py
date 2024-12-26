@@ -8,7 +8,3 @@ DB = mysql.connector.connect(
 )
 
 cursor = DB.cursor()
-cursor.execute("SELECT * FROM users")
-result = cursor.fetchall()
-print(result)
-print(type(result))
