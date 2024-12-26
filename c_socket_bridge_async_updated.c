@@ -6,7 +6,7 @@
 #include <pthread.h>
 
 #define GUI_PORT 65432    // Port for the GUI to connect
-#define BACKEND_PORT 6001 // Port to connect to the backend
+#define BACKEND_PORT 8111 // Port to connect to the backend
 #define BUFFER_SIZE 16384 // Increase buffer size to 16 KB
                           // Match chunk size with the backend's chunk size
 

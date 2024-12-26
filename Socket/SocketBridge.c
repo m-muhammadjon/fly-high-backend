@@ -7,25 +7,25 @@
 #include "ServerSideSocket.h"
 
 
-void connect_socket(int gui_socket, int server_side_socket) {
+void connect_socket(int *gui_socket, int *server_side_socket) {
     // GUI connection
-    gui_socket = establish_gui_socket();
+    *gui_socket = establish_gui_socket();
     if (gui_socket < 0) {
         exit(EXIT_FAILURE);
     }
     printf("C Socket Bridge listening on port %d\n", GUI_SOCKET_PORT);
     fflush(stdout);
     // Server Side connection
-    server_side_socket = establish_server_side_socket();
+    *server_side_socket = establish_server_side_socket();
     if (server_side_socket < 0) {
-        close(gui_socket);
+        close(*gui_socket);
         exit(EXIT_FAILURE);
     }
     printf("Server side socket has benn established successfully in port %d\n", SERVER_SIDE_PORT);
     fflush(stdout);
 }
 
-void accept_connections(int gui_socket, int server_side_socket) {
+void accept_connections(int *gui_socket, int server_side_socket) {
     int connections_count = 0;
 
     while(true) {

@@ -19,6 +19,7 @@ async def send_to_client_in_chunks(writer, data, chunk_size=CHUNK_SIZE):
     for i in range(0, total_length, chunk_size):
         chunk = json_data[i:i + chunk_size]
         writer.write(chunk)
+        print(f"Sent: {chunk}")
         await writer.drain()
 
 
@@ -40,28 +41,34 @@ async def handle_client(reader, writer):
     try:
         while True:
             raw_data = await reader.read(1024)
+            print("raw_data1 ", raw_data)
             raw_data = raw_data.decode()
+            print("after decode")
             try:
-                data = json.loads(raw_data)
-                print(f"{data=}")
+                print(f"{raw_data=}")
+                # data = json.loads(raw_data)
+                # print(f"{data=}")
                 # request, authorization, details = await parse_data(data)
                 # print("1")
                 # response = await get_response(request, authorization, details)
-                print(f"Received from C socket: {data}")
+                # print(f"Received from C socket: {data}")
 
                 await send_to_client_in_chunks(writer, {"foo": "bar"})
                 # json_data = json.dumps(response, cls=CustomJSONEncoder)
                 # writer.write(json_data.encode())
                 # await writer.drain()
-            except json.JSONDecodeError:
+            except:
                 print("Error: Invalid JSON data received")
                 response = {"status": "error", "message": "Invalid JSON data received"}
+                print("before send")
                 await send_to_client_in_chunks(writer, response)
+                print("after send")
                 # writer.write(json.dumps(response).encode())
                 # await writer.drain()
 
     except Exception as e:
         print(f"Error: {e}")
+        print("123")
         response = {"status": "error", "message": str(e)}
         await send_to_client_in_chunks(writer, response)
         # writer.write(json.dumps(response).encode())

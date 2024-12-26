@@ -44,12 +44,12 @@ int establish_gui_socket() {
     return gui_socket;
 }
 
-int accept_client_connection(int gui_socket) {
+int accept_client_connection(int *gui_socket) {
     int gui_client_connection;
     struct sockaddr_in gui_client_addr;
     socklen_t gui_client_addr_len = sizeof(gui_client_addr);
 
-    gui_client_connection = accept(gui_socket, (struct sockaddr *)&gui_client_addr, &gui_client_addr_len);
+    gui_client_connection = accept(*gui_socket, (struct sockaddr *)&gui_client_addr, &gui_client_addr_len);
     if (gui_client_connection < 0)
     {
         perror("GUI accept failed");
@@ -61,8 +61,8 @@ int accept_client_connection(int gui_socket) {
     return gui_client_connection;
 }
 
-int send_to_server_side(int server_side_socket, const char *buffer) {
-    if (send(server_side_socket, buffer, strlen(buffer), 0) < 0)
+int send_to_server_side(int *server_side_socket, const char *buffer) {
+    if (send(*server_side_socket, buffer, strlen(buffer), 0) < 0)
     {
         perror("Send to server side failed");
         return -1;
@@ -70,9 +70,9 @@ int send_to_server_side(int server_side_socket, const char *buffer) {
     return 0;
 }
 
-int read_from_server_side(int server_side_socket, char **buffer) {
+int read_from_server_side(int *server_side_socket, char **buffer) {
     uint32_t len_of_response;
-    if (recv(server_side_socket, &len_of_response, sizeof(len_of_response), 0) <= 0)
+    if (recv(*server_side_socket, &len_of_response, sizeof(len_of_response), 0) <= 0)
     {
         perror("Failed to read length header from server side");
         return -1;
@@ -89,7 +89,7 @@ int read_from_server_side(int server_side_socket, char **buffer) {
     int bytes_received = 0;
     while (bytes_received < len_of_response)
     {
-        int chunk = recv(server_side_socket, *buffer + bytes_received, BUFFER_SIZE, 0);
+        int chunk = recv(*server_side_socket, *buffer + bytes_received, BUFFER_SIZE, 0);
         if (chunk <= 0)
         {
             perror("Failed to read data from Server Side");
@@ -101,9 +101,9 @@ int read_from_server_side(int server_side_socket, char **buffer) {
     return len_of_response;
 }
 
-int send_to_gui_client_chunked_data(int gui_client_sock, const char *buffer, int length) {
+int send_to_gui_client_chunked_data(int *gui_client_sock, const char *buffer, int length) {
     uint32_t net_length = htonl(length);
-    if (send(gui_client_sock, &net_length, sizeof(net_length), 0) < 0)
+    if (send(*gui_client_sock, &net_length, sizeof(net_length), 0) < 0)
     {
         perror("Failed to send length header to GUI");
         return -1;
@@ -112,7 +112,7 @@ int send_to_gui_client_chunked_data(int gui_client_sock, const char *buffer, int
     int bytes_sent = 0;
     while (bytes_sent < length)
     {
-        int chunk = send(gui_client_sock, buffer + bytes_sent, length - bytes_sent, 0);
+        int chunk = send(*gui_client_sock, buffer + bytes_sent, length - bytes_sent, 0);
         if (chunk < 0)
         {
             perror("Failed to send data to GUI");
@@ -123,7 +123,7 @@ int send_to_gui_client_chunked_data(int gui_client_sock, const char *buffer, int
     return 0;
 }
 
-void handle_gui_client_connection(int gui_client_sock, int backend_sock, int client_number)
+void handle_gui_client_connection(int *gui_client_sock, int *backend_sock, int client_number)
 {
     char *buffer = NULL;
     int bytes_read;
@@ -135,7 +135,7 @@ void handle_gui_client_connection(int gui_client_sock, int backend_sock, int cli
     {
         char request_buffer[BUFFER_SIZE];
         memset(request_buffer, 0, BUFFER_SIZE);
-        bytes_read = read(gui_client_sock, request_buffer, BUFFER_SIZE - 1);
+        bytes_read = read(*gui_client_sock, request_buffer, BUFFER_SIZE - 1);
         if (bytes_read < 0)
         {
             perror("Read from GUI failed");
@@ -178,7 +178,7 @@ void handle_gui_client_connection(int gui_client_sock, int backend_sock, int cli
 void *client_thread_handler(void *args)
 {
     client_thread_args *arguments = args;
-    handle_gui_client_connection(arguments->gui_client_sock, arguments->backend_sock, arguments->client_number);
+    handle_gui_client_connection(&arguments->gui_client_sock, &arguments->backend_sock, arguments->client_number);
     close(arguments->gui_client_sock);
     free(arguments);
     pthread_exit(NULL);
