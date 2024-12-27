@@ -15,3 +15,5 @@ async def get_user_id(token: str) -> int:
     Get the user id from the token.
     """
     return jwt.decode(token, Settings.SECRET, algorithms=["HS256"])["user_id"]
+
+
