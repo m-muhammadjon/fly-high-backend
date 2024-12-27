@@ -16,7 +16,7 @@ async def send_to_client_in_chunks(writer, data, chunk_size=CHUNK_SIZE):
 
     # Send the total length as a 4-byte header
     print(f"SEND TO CLIENT: {json_data}")
-    await asyncio.sleep(3)
+    # await asyncio.sleep(3)
     writer.write(struct.pack('!I', total_length))
     await writer.drain()
 
@@ -38,6 +38,8 @@ async def get_response(request, authorization, details):
     match request:
         case "login-user":
             return await auth.handle_login_user(details)
+        case "register-user":
+            return await auth.handle_register_user(details)
         case _:
             return {"status": "error", "message": "Invalid request"}
 
@@ -55,6 +57,7 @@ async def handle_client(reader, writer):
                 data = json.loads(raw_data)
                 print(f"{data=}")
                 request, authorization, details = await parse_data(data)
+                print(f"{request=}")
                 # print("1")
                 response = await get_response(request, authorization, details)
                 print(f"Received from C socket: {data}")

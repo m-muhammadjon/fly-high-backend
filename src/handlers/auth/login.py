@@ -19,24 +19,7 @@ async def handle_login_user(details):
     if user:
         user_dict = dict(zip(column_names, user))
         token = await get_token(user_dict.get("user_id"))
-        return {"status": "OK", "result": {"token": token, "user": user_dict}}
+        return {"status": "OK", "result": {"token": token}}
     return {"status": "ERROR", "result": {"message": "Invalid credentials"}}
 
 
-"""
-    
-    def handle_login_user(data):
-    username = data.get("email")
-    password = data.get("password")
-    cursor.execute(
-        "SELECT * FROM users WHERE email = %s AND password = %s", (username, password)
-    )
-    user = cursor.fetchone()
-    print(f"{user=}")
-    print(f"{type(user)=}")
-    if user:
-        return {"status": "OK", "result": {"token": None, "user": user}}
-    return {"status": "ERROR", "result": {"message": "Invalid credentials"}}
-
-    
-    """
