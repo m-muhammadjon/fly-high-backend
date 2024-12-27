@@ -1,4 +1,4 @@
-from src.database import cursor
+from src.database import cursor, DB
 from src.utils import get_token
 
 
@@ -35,6 +35,7 @@ async def handle_register_user(details):
         details.get("address_line_1")
     )
     cursor.execute(insert_query, values)
+    DB.commit()
 
     token = await get_token(new_user_id)
-    return {"status": "OK", "result": {"token": token, "user_id": new_user_id}}
+    return {"status": "OK", "result": {"token": token}}

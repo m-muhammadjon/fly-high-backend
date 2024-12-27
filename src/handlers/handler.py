@@ -2,7 +2,7 @@ import asyncio
 import json
 import struct
 
-from . import auth
+from . import auth, profile
 
 CHUNK_SIZE = 16384
 
@@ -40,6 +40,8 @@ async def get_response(request, authorization, details):
             return await auth.handle_login_user(details)
         case "register-user":
             return await auth.handle_register_user(details)
+        case "get-profile":
+            return await profile.handle_get_profile(authorization)
         case _:
             return {"status": "error", "message": "Invalid request"}
 
